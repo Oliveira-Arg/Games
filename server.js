@@ -1,40 +1,35 @@
-/**
- * Servidor back-end utilizando o módulo Express que manipula os métodos HTTP.
- * separados nas rotas Cliente e Produto
- */
-
-// Importar o módulo Express
-// Este módulo é instalado através do comando 'npm install express'
+// Importação do express
 const express = require('express');
 
-// configuração de acesso ao servidor
-const hostname = '127.0.0.1';
-const port = 3000;
-
-// criação do aplicativo servidor
+// Criando o app do express
 const app = express();
 
-// importar as configurações de rotas
-const clienteRotas = require('./routes/Cliente');
-const produtoRotas = require('./routes/Produto');
+// Middleware para servir arquivos estáticos da pasta 'public'
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 
-// GET
-// rota raiz do servidor
-app.get('/', (req, res) => {
-  // código de status HTTP
-  res.status(200);
-  // envio da mensagem para o front-end
-  res.send({
-    mensagem: 'Você acessou a raiz do servidor web.'
-  });
+// Rota para o arquivo produto-obtido.html
+app.get('/produto-obtido', (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, 'src', 'pages', 'produto-obtido.html'));
 });
 
-// expondo as rotas configuradas em Cliente.js e Produto.js
-app.use('/cliente', clienteRotas);
-app.use('/produto', produtoRotas);
+// Importação das rotas
+const rotaProduto1 = require('./src/routes/Produto1');
+const rotaProduto2 = require('./src/routes/Produto2');
 
+// Rota para a página inicial
+app.get('/', (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, 'src', 'pages', 'index.html'));
+});
 
-// rodar o servidor
-app.listen(port, hostname, () => {
-  console.log(`Servidor rodando em http://${hostname}:${port}/`);
+// Gerenciamento das rotas
+app.use('/produto1', rotaProduto1);
+app.use('/produto2', rotaProduto2);
+
+// Rodar o servidor
+const localhost = '127.0.0.1';
+const port = 3000;
+
+app.listen(port, localhost, () => {
+  console.log(`Servidor rodando em http://${localhost}:${port}/`);
 });
